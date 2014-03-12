@@ -46,6 +46,7 @@ def ReadParaSet(ConfIn):
     llValue = []
     for para in conf.hConf:
         value = conf.hConf[para]
+        lName.append(para)
         if type(value) == list:
             llValue.append(value)
         else:
