@@ -24,6 +24,15 @@ class ParameterSetC:
         NewPara.hPara = copy.deepcopy(self.hPara, memo)
         return NewPara    
         
+    def dumps(self,WithName=True):
+        res = ""
+        for item in self.hPara:
+            if WithName:
+                res += item + ":" + str(self.hPara[item]) + ' '
+            else:
+                res += str(self.hPara[item]) + ' '
+        res = res.strip()
+        return res
         
         
         
