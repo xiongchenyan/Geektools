@@ -41,7 +41,7 @@ def ReadParaSet(ConfIn):
         #format: name value#value#value
         #if value if string, then use "", otherwise should be float
     lParameterSet = []
-    conf = cxConf.LoadConf(ConfIn)
+    conf = cxConf(ConfIn)
     lName = []
     llValue = []
     for para in conf.hConf:
