@@ -8,7 +8,7 @@ A Parameter set class (in GeekTools.CV package):
 
 
 from cxBase.base import *
-import copy
+import copy,json
 
 class ParameterSetC:
     def Init(self):
@@ -62,7 +62,9 @@ def ReadParaSet(ConfIn):
                 pass
             
     #dfs enumerate to generate para set
-    DFSEnumerateParaSet(lName,llValue,lParameterSet)    
+    print "read raw para config, as\n%s\n%s" %(json.dumps(lName),json.dumps(llValue))
+    DFSEnumerateParaSet(lName,llValue,lParameterSet)
+    print "read [%d] para set from [%s]" %(len(lParameterSet),ConfIn)    
     return lParameterSet
 
 
