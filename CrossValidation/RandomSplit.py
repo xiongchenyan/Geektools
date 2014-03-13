@@ -5,14 +5,14 @@ random split
 '''
 
 import random,math
-
+import json
 
 
 def RandomSplit(lData,K):
     llSplit = []
     random.shuffle(lData)
     lChunks = []
-    n = math.ceil(float(len(lData)/float(K)))
+    n = int(math.ceil(float(len(lData)/float(K))))
     for i in xrange(0,len(lData),n):
         lChunks.append(lData[i:i+n])
     for i in range(K):
@@ -24,5 +24,6 @@ def RandomSplit(lData,K):
             else:
                 lTrain.extend(lChunks[j])
         llSplit.append([lTrain,lTest])
+    print "split res:\n%s"%(json.dumps(llSplit,indent=1))
     return llSplit
         
