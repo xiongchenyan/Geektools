@@ -39,4 +39,5 @@ def BinValue(l,n=20):
         hBin[BinNumber] += 1
         print 'processed [%d]' %len(hBin)
     lBin = hBin.items()
-    return lBin.sort(key=itemgetter(0))
+    lBin.sort(key=itemgetter(0))
+    return lBin
