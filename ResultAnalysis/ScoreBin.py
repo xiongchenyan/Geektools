@@ -36,5 +36,6 @@ def BinValue(l,n=20):
         if not BinNumber in hBin:
             hBin[BinNumber] = 0
         hBin[BinNumber] += 1
+        print 'processed [%d]' %len(hBin)
     lBin = hBin.items()
     return lBin.sort(key=itemgetter(0))
