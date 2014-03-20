@@ -34,5 +34,5 @@ def BinValue(l,n=20):
         if not BinNumber in hBin:
             hBin[BinNumber] = 0
         hBin[BinNumber] += 1
-    lBin = hBin.items().sorted(key=itemgetter(0))
+    lBin = hBin.items().sort(key=itemgetter(0))
     return lBin
