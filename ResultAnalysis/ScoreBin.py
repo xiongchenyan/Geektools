@@ -23,21 +23,18 @@ def GetBinNumber(value,BinSize):
     if 0 == value:
         return 0
     BinNumber = int(math.ceil(math.fabs((value) / BinSize))) * (value / math.fabs(value))
-    print "[%f] in bin [%d]" %(value,BinNumber)
     return BinNumber
 
 
 
 def BinValue(l,n=20):
     BinSize = GetBinSize(l,n)
-    print "bin size: [%f]" %(BinSize)
     hBin = {}
     for value in l:
         BinNumber = GetBinNumber(value,BinSize)
         if not BinNumber in hBin:
             hBin[BinNumber] = 0
         hBin[BinNumber] += 1
-        print 'processed [%d]' %len(hBin)
     lBin = hBin.items()
     lBin.sort(key=itemgetter(0))
     return lBin
