@@ -24,6 +24,7 @@ def GetBinNumber(value,BinSize):
         return 0
     BinNumber = int(math.ceil(math.fabs((value) / BinSize))) * (value / math.fabs(value))
     print "[%f] in bin [%d]" %(value,BinNumber)
+    return BinNumber
 
 
 
