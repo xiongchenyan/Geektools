@@ -27,11 +27,14 @@ def GetBinNumber(value,BinSize):
 
 
 
-def BinValue(l,n=20):
-    BinSize = GetBinSize(l,n)
+def BinValue(l,n=20,BinSize = 0):
+    if 0 == BinSize:
+        BinSize = GetBinSize(l,n)
     hBin = {}
     for value in l:
         BinNumber = GetBinNumber(value,BinSize)
+        if math.fabs(BinNumber) > (n/2):
+            BinNumber = (n/2+1) * math.fabs(BinNumber) /BinNumber            
         if not BinNumber in hBin:
             hBin[BinNumber] = 0
         hBin[BinNumber] += 1
