@@ -8,8 +8,9 @@ A Parameter set class (in GeekTools.CV package):
 
 
 from cxBase.base import *
-import copy,json
-
+from cxBase.WalkDirectory import *
+import copy,json,os
+from operator import itemgetter
 class ParameterSetC:
     def Init(self):
         self.hPara = {} #mapping from paraname to value
@@ -33,7 +34,33 @@ class ParameterSetC:
                 res += str(self.hPara[item]) + ' '
         res = res.strip()
         return res
-        
+    
+    def dump(self,OutName):
+        out = open(OutName,'w')
+        for item in self.hPara:
+            print >>out, item + " " + str(self.hPara[item])
+        out.close()
+
+    def load(self,InName):
+        conf = cxConf(InName)
+        self.hPara = dict(conf.hConf)
+        return True
+
+def DFSEnumerateParaSet(lName,llValue,lParameterSet,CurParaSet=ParameterSetC(),CurLvl=0):
+    if CurLvl >= len(lName):
+        #end of dfs, yield parameter, need a deep copy and put to lParameterSet
+        lParameterSet.append(copy.deepcopy(CurParaSet))
+        return True
+    
+    name = lName[CurLvl]
+    lValue = llValue[CurLvl]
+    for i in range(len(lValue)):        
+        CurParaSet.hPara[name] = lValue[i]
+        DFSEnumerateParaSet(lName,llValue,lParameterSet,CurParaSet,CurLvl+1)           
+    return True
+                
+            
+                
         
         
 def ReadParaSet(ConfIn):
@@ -69,21 +96,38 @@ def ReadParaSet(ConfIn):
     return lParameterSet
 
 
-
-def DFSEnumerateParaSet(lName,llValue,lParameterSet,CurParaSet=ParameterSetC(),CurLvl=0):
-    if CurLvl >= len(lName):
-        #end of dfs, yield parameter, need a deep copy and put to lParameterSet
-        lParameterSet.append(copy.deepcopy(CurParaSet))
-        return True
+def SplitParaSetToFolder(MulParaFileIn,OutDir):
+    #file name is just para id
+    #MulParaFileIn is a multi valued ParaSet file
+    #will output to OutDir for every combination of para, one each file
+    if not os.path.exists(OutDir):
+        os.makedirs(OutDir)
     
-    name = lName[CurLvl]
-    lValue = llValue[CurLvl]
-    for i in range(len(lValue)):        
-        CurParaSet.hPara[name] = lValue[i]
-        DFSEnumerateParaSet(lName,llValue,lParameterSet,CurParaSet,CurLvl+1)           
+    lParaSet = ReadParaSet(MulParaFileIn)
+    for i in range(len(lParaSet)):
+        lParaSet[i].dump(OutDir + "/%d" %(i))
     return True
-                
-            
-        
-        
+
+def LoadParaSetFromDir(InDir):
+    #will temp a run for all files in InDir, please make sure they behave
+    #name should be init (be created by SplitParaSetToFolder
+    lName = WalkDir(InDir)
+    lMid = []
+    for name in lName:
+        vCol = name.split('/')
+        id = int(vCol[len(vCol)-1])
+        ParaSet = ParameterSetC()
+        ParaSet.load(name)
+        lMid.append([id,ParaSet])
     
+    lMid.sort(key=itemgetter(0))
+    lParaSet=[para for id,para in lMid]
+    return lParaSet
+    
+
+    
+    
+
+
+        
+
