@@ -18,7 +18,8 @@ class FoldNameGeneratorC:
         self.ParaSuffix = "para/"
         self.EvaSuffix = 'eva/'
         self.ConfSuffix = 'conf/'
-        self.SubSuffix = 'sub/'        
+        self.SubSuffix = 'sub/'   
+        self.PredictSuffix = 'pred/'     
         return
     
     
@@ -42,6 +43,13 @@ class FoldNameGeneratorC:
         print"rootdir\nk 5"
     
     
+    @staticmethod
+    def SplitFoldId(name):
+        vCol = name.split('_')
+        if len(vCol) < 2:
+            return '0'
+        return vCol[len(vCol)-1]
+    
     def DataDir(self):
         return self.RootDir + '/' + self.DataSuffix
     def ParaDir(self):
@@ -53,8 +61,12 @@ class FoldNameGeneratorC:
     def SubDir(self):
         return self.RootDir + '/' + self.SubSuffix
     
+    
+    def PredictDir(self):
+        return self.RootDir + "/" + self.PredictSuffix
+    
     def AllSubDir(self):
-        return [self.DataDir(),self.ParaDir(),self.EvaDir(),self.ConfDir(),self.SubDir()]
+        return [self.DataDir(),self.ParaDir(),self.EvaDir(),self.ConfDir(),self.SubDir(),self.PredictDir()]
     
     def CreateDir(self):
         for DirName in self.AllSubDir():

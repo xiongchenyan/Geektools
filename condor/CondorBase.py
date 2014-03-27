@@ -48,6 +48,11 @@ class cxCondorC(cxConf):
         return res
 
             
-
+    def SetCondor(self,field,value):
+        self.hConf[field] = value
+        return True
+    
+    def GetCondor(self,name):
+        return self.GetConf(name)
     
     
