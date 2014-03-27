@@ -87,7 +87,7 @@ class DataSpliterC(object):
         llSplit = RandomSplit(lData,self.K,self.NeedDev)
         lFileName = self.NameCenter.DataFileName()          
         for i in range(self.K):
-            for j in len(lFileName[i]):
+            for j in range(len(lFileName[i])):
                 self.OutData(llSplit[i][j],lFileName[i][j])
                 
         return True
