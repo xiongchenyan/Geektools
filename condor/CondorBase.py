@@ -13,7 +13,7 @@ site.addsitedir('/bos/usr0/cx/PyCode/cxPyLib')
 
 
 from cxBase.base import cxConf
-
+from copy import deepcopy
 class cxCondorC(cxConf):    
     def LoadSub(self,InName):
         for line in open(InName):
@@ -54,5 +54,10 @@ class cxCondorC(cxConf):
     
     def GetCondor(self,name):
         return self.GetConf(name)
+    
+    def __deepcopy__(self,memo):
+        conf = cxCondorC()
+        conf.hConf = deepcopy(self.hConf)
+        return conf
     
     
