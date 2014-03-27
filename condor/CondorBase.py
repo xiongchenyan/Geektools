@@ -9,7 +9,7 @@ Created on Mar 25, 2014
 
 import site
 site.addsitedir('/bos/usr0/cx/PyCode/Geektools')
-site.addsitedir('/bos/usr0/cx/PyCode/cxPylib')
+site.addsitedir('/bos/usr0/cx/PyCode/cxPyLib')
 
 
 from cxBase.base import cxConf

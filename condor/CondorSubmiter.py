@@ -14,7 +14,7 @@ output: list of job id?
 
 import site
 site.addsitedir('/bos/usr0/cx/PyCode/Geektools')
-site.addsitedir('/bos/usr0/cx/PyCode/cxPylib')
+site.addsitedir('/bos/usr0/cx/PyCode/cxPyLib')
 
 
 import subprocess
