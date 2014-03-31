@@ -43,6 +43,7 @@ class CondorSubmiterC(object):
     def Submit(self,lCondor,JobName):
         
         CondorSubFileName = self.WriteCondorFile(lCondor, JobName)
+        print "start submiting [%s][%d] jobs..." %(JobName, len(lCondor))
         SubmitOut = subprocess.check_output(['condor_submit',CondorSubFileName])
         lJobId = self.SegJobId(SubmitOut)        
         return lJobId
