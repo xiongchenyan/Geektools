@@ -64,7 +64,7 @@ class CVJobSubmiterC(object):
         return lFName
     
     def LoadParaName(self):
-        lParaName = WalkDir(self.NameCenter.ParaDir()) #para index is exactly the para fname
+        lParaName = WalkDir(self.Namer.ParaDir()) #para index is exactly the para fname
         return lParaName
     
     
@@ -82,7 +82,7 @@ class CVJobSubmiterC(object):
     
     def GenerateSubForConf(self,conf,ConfIndex):
         condor = deepcopy(self.CondorBase)        
-        ConfFName = self.NameCenter.ConfDir() + "_%d" %(ConfIndex)
+        ConfFName = self.Namer.ConfDir() + "_%d" %(ConfIndex)
         conf.dump(ConfFName)
         oldargu = list(condor.GetCondor('arguments'))
         oldargu[len(oldargu) - 1] = ConfFName
