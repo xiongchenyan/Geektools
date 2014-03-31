@@ -69,7 +69,7 @@ class CondorSubmiterC(object):
     
     def SegJobId(self,OutPut):
         lJobId = []
-        print "TBD"
+#         print "TBD"
         lLine = OutPut.split('\n')
         for line in lLine:            
             if 'submitted to cluster' in line:
