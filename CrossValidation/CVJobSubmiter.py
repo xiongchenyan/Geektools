@@ -102,6 +102,7 @@ class CVJobSubmiterC(object):
         
         lSub = []
         ConfIndex = 0
+        print "start to make sub file for [%d] data partition [%d] para" %(len(lFName),len(lParaName))
         for FName in lFName:
             for ParaName in lParaName:
                 if not self.FNameParaPairValid(FName, ParaName):
@@ -112,7 +113,7 @@ class CVJobSubmiterC(object):
                 lSub.append(sub)
                 
         CondorSubmiter = CondorSubmiterC()
-        CondorSubmiter.WorkDir = self.NameCenter.SubDir()
+        CondorSubmiter.WorkDir = self.Namer.SubDir()
         lJobId = CondorSubmiter.Submit(lSub, self.JobName)        
         print "submitted job ids:\n%s" %(json.dumps(lJobId))        
         return lJobId
