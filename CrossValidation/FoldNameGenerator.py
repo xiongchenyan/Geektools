@@ -48,7 +48,7 @@ class FoldNameGeneratorC:
         vCol = name.split('_')
         if len(vCol) < 2:
             return '0'
-        return vCol[len(vCol)-1]
+        return int(vCol[len(vCol)-1])
     
     def DataDir(self):
         return self.RootDir + '/' + self.DataSuffix
