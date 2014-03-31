@@ -19,7 +19,7 @@ site.addsitedir('/bos/usr0/cx/PyCode/cxPyLib')
 
 import subprocess
 from CondorBase import *
-import json
+import json,time
 
 class CondorSubmiterC(object):
     def Init(self):
@@ -41,16 +41,21 @@ class CondorSubmiterC(object):
         print "workdir"
     
     def Submit(self,lCondor,JobName):
-        
-        CondorSubFileName = self.WriteCondorFile(lCondor, JobName)
-        print "start submiting [%s][%d] jobs..." %(JobName, len(lCondor))
-        SubmitOut = subprocess.check_output(['condor_submit',CondorSubFileName])
-        lJobId = self.SegJobId(SubmitOut)        
+        Index = 0
+        print "start submiting [%s][%d] jobs..." %(JobName, len(lCondor))        
+        lJobId = []
+        Index = 0
+        for i in xrange(0,len(lCondor),100):            
+            CondorSubFileName = self.WriteCondorFile(lCondor[i:i+100], JobName,Index)
+            Index += 1        
+            SubmitOut = subprocess.check_output(['condor_submit',CondorSubFileName])
+            lJobId.extend(self.SegJobId(SubmitOut))
+            time.sleep(5)                    
         return lJobId
     
     
-    def WriteCondorFile(self,lCondor,JobName):
-        CondorSubFileName = self.MakeSubFileName(JobName)
+    def WriteCondorFile(self,lCondor,JobName,Index = 0):
+        CondorSubFileName = self.MakeSubFileName(JobName,Index)
         #things in lCondor must be fully made, the JobName and ids
         out = open(CondorSubFileName,'w')
         for Condor in lCondor:
@@ -59,8 +64,8 @@ class CondorSubmiterC(object):
         return CondorSubFileName
     
     
-    def MakeSubFileName(self,JobName):
-        return self.WorkDir + "/Sub" + JobName
+    def MakeSubFileName(self,JobName,Index):
+        return self.WorkDir + "/Sub" + JobName + "_%d" %(Index)
     
     def SegJobId(self,OutPut):
         lJobId = []
