@@ -82,7 +82,7 @@ class CVParaResCollectorC(cxBaseC):
                 continue
             if (self.Reverse & (self.hFoldBestPara[FoldId][1] < EvaMetric)) | ( (not self.Reverse) & (self.hFoldBestPara[FoldId][1] > EvaMetric)):
                 self.hFoldBestPara[FoldId] = [ParaId,EvaMetric]
-                print "get better para [%d,%s]" %(ParaId,str(EvaMetric))
+                print "get better para fold[%d] [%d,%s]" %(FoldId,ParaId,str(EvaMetric))
         return dict(self.hFoldBestPara)
     
 
