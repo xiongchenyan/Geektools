@@ -29,9 +29,11 @@ class CVJobSubmiterC(object):
         self.CondorBase = cxCondorC()
         self.ConfBase = cxConf()
         self.JobName = "CV"
+        self.ConfIn = ""
         
         
     def SetConf(self,ConfIn):
+        self.ConfIn = ConfIn
         self.Namer.SetConf(ConfIn)
         self.RootDir = self.Namer.RootDir
         self.K = self.Namer.K
