@@ -56,7 +56,7 @@ class DataSpliterC(object):
     def SetConf(self,ConfIn):
         conf = cxConf(ConfIn)
         self.InName = conf.GetConf('in')
-        self.NeedDev = bool(conf.GetConf('needdev'))
+        self.NeedDev = bool(int(conf.GetConf('needdev')))
         self.NameCenter = FoldNameGeneratorC(ConfIn)
     
     def __init__(self,ConfIn = ""):
