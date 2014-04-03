@@ -77,9 +77,12 @@ class CondorJobMonitorC(cxBaseC):
     
     def SplitCondorJobId(self,OutStr):
         lJob = []
-        for line in OutStr.split('\t'):
-            vCol = line.split('.')
-            lJob.append(vCol[0])          
+        for line in OutStr.split('\n'):
+            vCol = line.split()
+            if len[vCol] > 2:
+                if self.User == vCol[1]:
+                    lJob.append(vCol[0].split('.')[0])
+        print "user's running jobs\n%s" %(json.dumps(lJob))
         return lJob
     
     def CheckLogStatus(self,JobName):
