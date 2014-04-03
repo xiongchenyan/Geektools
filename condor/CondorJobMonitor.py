@@ -78,7 +78,7 @@ class CondorJobMonitorC(cxBaseC):
     def SplitCondorJobId(self,OutStr):
         lJob = []
         for line in OutStr.split('\n'):
-            print "spliting line [%s]"
+            print "spliting line [%s]" %(line)
             vCol = line.split()
             if len(vCol) > 2:
                 if self.User == vCol[1]:
