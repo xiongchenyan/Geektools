@@ -45,7 +45,7 @@ class CondorJobMonitorC(cxBaseC):
         CheckNum = 0
         
         while CheckNum < self.MaxCheckNum:
-            OutStr = subprocess.check_output(['condor_q','user %s' %(self.User)])
+            OutStr = subprocess.check_output(['condor_q','user', '%s' %(self.User)])
             lJob = self.SplitCondorJobId(OutStr)
             JobFinished = True
             RunningJobCnt = 0
