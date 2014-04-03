@@ -68,6 +68,7 @@ class CondorJobMonitorC(cxBaseC):
                 else:
                     return True
             print "[%d] check, running job [%d]" %(CheckNum,RunningJobCnt)
+            print "waiting for [%d] sec" %(self.CheckFreq)
             time.sleep(self.CheckFreq)
             CheckNum += 1        
         print "time out"
