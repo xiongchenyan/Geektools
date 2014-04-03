@@ -26,6 +26,7 @@ from AdhocEva.AdhocMeasure import *
 from ScoreBin import *
 from cxBase.base import *
 from copy import deepcopy
+from FigureRelate.BarPloter import BarPloterC
 
 class AdhocResAnalysisC(cxBaseC):
     
@@ -111,7 +112,7 @@ class AdhocResAnalysisC(cxBaseC):
             lRawRelGain.append(AdhocResAnalysisC().CalcRelGain(Base, Target))
             
         #bin them to target bin
-        return BinValue(lRawRelGain)
+        return BinValue(lRawRelGain,n=20,BinSize=0.1)
     
     
     
@@ -170,6 +171,25 @@ class AdhocResAnalysisC(cxBaseC):
     
     def DrawPerQGainFigure(self,FigOutName):
         #draw a per q gain figure
+        #now only ploting for on target measure        
+        #create X and Ys
+        lY = []
+        X = []
+        for i in range(len(self.lMethodName)):
+            BinName,lBin = self.WinLossNumBin(self.hBaseMeasure,
+                                         self.lhMethodMeasure[i],
+                                         self.hMainMeasure.keys()[0])
+            X = BinName
+            lY.append(lBin)
+            
+        BarMaker = BarPloterC()
+        BarMaker.lY = lY
+        BarMaker.X = X
+        BarMaker.XLabel = 'Relative Rain'
+        BarMaker.YLabel = 'Number of Query'
+        BarMaker.lLegend = self.lMethodName
+        BarMaker.title = 'Per query relative gain'
+        BarMaker.Bar(FigOutName)                
         return True
     
     

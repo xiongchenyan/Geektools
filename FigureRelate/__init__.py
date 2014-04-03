@@ -1,0 +1,3 @@
+'''
+class related to figures
+'''
