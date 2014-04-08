@@ -13,7 +13,7 @@ do:
     automatically determin bin size, but max-0/0.5n
     then bin them
 '''
-import math
+import math,json
 from operator import itemgetter
 
 def GetBinSize(l,n=20):
@@ -41,9 +41,10 @@ def BinValue(l,n=20,BinSize = 0):
             BinNumber = (n/2+1) * math.fabs(BinNumber) /BinNumber            
         hBin[BinNumber] += 1
 
-    lBin = hBin.items()
+    lBin = [list(mid) for mid in hBin.items()]
     lBin.sort(key=itemgetter(0))
     lBinRange = GenerateBinRange(n,BinSize)
+    
     for i in range(len(lBin)):
         lBin[i][0] = lBinRange[i]
     return lBin
@@ -52,17 +53,16 @@ def BinValue(l,n=20,BinSize = 0):
 def GenerateBinRange(n,BinSize):
     lBinRange = [] #a string based bin range name
     
-    lBinRange.append('(-\infty ,%.0f%%)' %(100.0* (-(n/2) * BinSize)))
+    lBinRange.append('<%.0f%%' %(100.0* (-(n/2) * BinSize)))
     
     i = -(n/2)
     while i < n/2:
         if i == 0:
             lBinRange.append('0')
+        if i < 0:
+            lBinRange.append('%.0f%%' %(100.0*(i * BinSize)))
         else:
-            if i < 0:
-                lBinRange.append('[%f,%f)' %(100.0*(i * BinSize),100.0*((i+1)*BinSize)))
-            else:
-                lBinRange.append('(%f,%f]' %(100.0*(i * BinSize),100.0*((i+1)*BinSize)))        
+            lBinRange.append('%.0f%%' %(100.0*((i+1)*BinSize)))        
         i += 1
-    lBinRange.append('(%.0f%%,\infty)' %(100.0* ((n/2) * BinSize)))
+    lBinRange.append('>%.0f%%' %(100.0* ((n/2) * BinSize)))
     return lBinRange

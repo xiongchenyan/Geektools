@@ -32,7 +32,7 @@ class AdhocResAnalysisC(cxBaseC):
     
     def Init(self):
         self.hBaseMeasure = {} #qid->measure
-        self.lhMethodMeasure = {} #dim [method]
+        self.lhMethodMeasure = [] #dim [method]
         self.lMethodName = []        
         self.hMainMeasure = {'err':0} #method to focus
         
@@ -43,7 +43,10 @@ class AdhocResAnalysisC(cxBaseC):
         for i in range(len(lMethodName)):
             self.LoadEvaResForMethod(lMethodFName[i],lMethodName[i])
         lMainMeasure = conf.GetConf('mainmeasure', 'err')
-        self.hMainMeasure = dict(zip(lMainMeasure,range(len(lMainMeasure))))
+        if type(lMainMeasure) == list:
+            self.hMainMeasure = dict(zip(lMainMeasure,range(len(lMainMeasure))))
+        else:
+            self.hMainMeasure[lMainMeasure] = 0
         return True
     
     @staticmethod
@@ -122,6 +125,7 @@ class AdhocResAnalysisC(cxBaseC):
         
         
         TableStr += self.FormResTableHead(caption, label)
+        TableStr += self.FormTableRowForMethod(self.hBaseMeasure, 'baseline')
         for i in range(len(self.lhMethodMeasure)):
             hMeasure = self.lhMethodMeasure[i]
             MethodName = self.lMethodName[i]
@@ -134,7 +138,7 @@ class AdhocResAnalysisC(cxBaseC):
         
         NumOfCol = AdhocMeasureC().NumOfMeasure() + len(self.hMainMeasure)*2 + 1
         
-        TableHead = "\\begin{table}\\centering\\caption{%s\\label{%s}}" %(caption,label)
+        TableHead = "\\begin{table*}\\centering\\caption{%s\\label{%s}}" %(caption,label)
         TableHead += "\\begin{tabular}{|%s}" %('c|'*NumOfCol)
         TableHead += '\\hline\n'
         
@@ -158,14 +162,14 @@ class AdhocResAnalysisC(cxBaseC):
                     TableRow += "&NA&NA"
                 else:
                     RelGain = AdhocResAnalysisC().RelativeGain(self.hBaseMeasure,hMeasure,Measure)
-                    Win,Loss,Tie = AdhocResAnalysisC().WinLossNumBin(self.hBaseMeasure, hMeasure, Measure)
-                    TableRow +="&$%.0f%%$ &%d/%d/%d " %(100*RelGain, Win,Loss,Tie)
+                    Win,Loss,Tie = AdhocResAnalysisC().WinLossTie(self.hBaseMeasure, hMeasure, Measure)
+                    TableRow +="&$%.2f\\%%$ &%d/%d/%d " %(100*RelGain, Win,Loss,Tie)
         
-        TableRow += '\\\n'              
+        TableRow += '\\\\\n'              
         return TableRow
     
     def FormTableTail(self):
-        TableTail = "\end{tabular}\end{table}"
+        TableTail = "\\hline\end{tabular}\end{table*}"
         return TableTail
     
     
@@ -176,11 +180,20 @@ class AdhocResAnalysisC(cxBaseC):
         lY = []
         X = []
         for i in range(len(self.lMethodName)):
-            BinName,lBin = self.WinLossNumBin(self.hBaseMeasure,
+            lBin = self.WinLossNumBin(self.hBaseMeasure,
                                          self.lhMethodMeasure[i],
                                          self.hMainMeasure.keys()[0])
-            X = BinName
-            lY.append(lBin)
+            X = [BinName for BinName,cnt in lBin]
+            Y = [cnt for BinName,cnt in lBin]
+            for j in range(len(X)):
+                if X[j] != '0':
+                    Y[j] = -Y[j]
+                else:
+                    break
+            
+            lY.append(Y)
+            
+            
             
         BarMaker = BarPloterC()
         BarMaker.lY = lY
