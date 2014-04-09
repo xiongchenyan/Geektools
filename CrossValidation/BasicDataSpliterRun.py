@@ -6,7 +6,7 @@ Created on Apr 8, 2014
 
 
 import site
-
+site.addsitedir('/bos/usr0/cx/PyCode/cxPyLib')
 from RandomSplit import *
 from FoldNameGenerator import *
 class BasicDataSpliterC(DataSpliterC):
