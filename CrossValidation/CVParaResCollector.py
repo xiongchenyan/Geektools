@@ -72,8 +72,7 @@ class CVParaResCollectorC(cxBaseC):
     
     
     def Process(self):
-        lEvaFName = self.GetEvaResFName()
-        
+        lEvaFName = self.GetEvaResFName()        
         for EvaName in lEvaFName:
             FoldId,ParaId = self.SplitFoldParaId(EvaName)
             EvaMetric = self.LoadEvaMetric(EvaName)
