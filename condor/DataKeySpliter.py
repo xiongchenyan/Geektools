@@ -42,9 +42,9 @@ for lvCol in KeyReader:
 KeyReader.close()
 
 
-    
-N = int(math.ceil(float(KeyCnt / K)))
-
+print "total [%d] key" %(KeyCnt)
+N = int(math.ceil(float(KeyCnt) / K))
+print "each fold [%d] key" %(N)
 OutCnt = 0
 out = open(Namer.DataDir() + "/test_%d" %(OutCnt),'w')
 
