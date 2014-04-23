@@ -62,6 +62,7 @@ for lvCol in KeyReader:
         print "split [%d] done" %(OutCnt)
         OutCnt += 1
         out = open(Namer.DataDir() + "/test_%d" %(OutCnt),'w')
+        cnt = 0
         
 out.close()
 print "finished"
