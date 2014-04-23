@@ -46,7 +46,7 @@ KeyReader.close()
 N = int(math.ceil(float(KeyCnt / K)))
 
 OutCnt = 0
-out = open(Namer.DataDir() + "/test_%d" %(OutCnt))
+out = open(Namer.DataDir() + "/test_%d" %(OutCnt),'w')
 
 cnt = 0
 
@@ -61,7 +61,7 @@ for lvCol in KeyReader:
         out.close()
         print "split [%d] done" %(OutCnt)
         OutCnt += 1
-        out = open(Namer.DataDir() + "/test_%d" %(OutCnt))
+        out = open(Namer.DataDir() + "/test_%d" %(OutCnt),'w')
         
 out.close()
 print "finished"
