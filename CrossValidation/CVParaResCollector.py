@@ -77,6 +77,7 @@ class CVParaResCollectorC(cxBaseC):
             FoldId,ParaId = self.SplitFoldParaId(EvaName)
             EvaMetric = self.LoadEvaMetric(EvaName)
             if not FoldId in self.hFoldBestPara:
+                print "get better para fold [%d] [%d,%s]" %(FoldId,ParaId,str(EvaMetric))
                 self.hFoldBestPara[FoldId] = [ParaId,EvaMetric]
                 continue
             if (self.Reverse & (self.hFoldBestPara[FoldId][1] < EvaMetric)) | ( (not self.Reverse) & (self.hFoldBestPara[FoldId][1] > EvaMetric)):
