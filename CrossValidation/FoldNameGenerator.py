@@ -20,6 +20,7 @@ class FoldNameGeneratorC:
         self.ConfSuffix = 'conf/'
         self.SubSuffix = 'sub/'   
         self.PredictSuffix = 'pred/'     
+        self.OutSuffix = 'out/'
         return
     
     
@@ -61,6 +62,8 @@ class FoldNameGeneratorC:
     def SubDir(self):
         return self.RootDir + '/' + self.SubSuffix
     
+    def OutDir(self):
+        return self.RootDir + '/' + self.OutSuffix
     
     def PredictDir(self):
         return self.RootDir + "/" + self.PredictSuffix
