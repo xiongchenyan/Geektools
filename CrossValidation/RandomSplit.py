@@ -16,9 +16,8 @@ site.addsitedir('/bos/usr0/cx/PyCode/cxPylib')
 from cxBase.base import *
 from FoldNameGenerator import *
 
-def RandomSplit(lData,K,NeedDev = False):
+def DataSplit(lData,K,NeedDev = False):
     llSplit = []
-    random.shuffle(lData)
     lChunks = []
     n = int(math.ceil(float(len(lData)/float(K))))
     for i in xrange(0,len(lData),n):
@@ -56,6 +55,7 @@ class DataSpliterC(object):
         self.RootDir = ""
         self.K = 5
         self.NeedDev = True
+        self.Random = True
         return
     
     def SetConf(self,ConfIn):
@@ -64,6 +64,7 @@ class DataSpliterC(object):
         self.NeedDev = bool(int(conf.GetConf('needdev')))
         self.NameCenter = FoldNameGeneratorC(ConfIn)
         self.K = int(conf.GetConf('k', self.K))
+        self.Random = bool(int(conf.GetConf('random',1)))
     
     def __init__(self,ConfIn = ""):
         self.Init()
@@ -74,7 +75,7 @@ class DataSpliterC(object):
     
     @staticmethod
     def ShowConf():
-        print "in\nneeddev 1"
+        print "in\nneeddev 1\nrandom 1"
         FoldNameGeneratorC.ShowConf()
         
     
@@ -90,7 +91,9 @@ class DataSpliterC(object):
         
     def Process(self):
         lData = self.LoadData()
-        llSplit = RandomSplit(lData,self.K,self.NeedDev)
+        if self.Random:
+            random.shuffle(lData)
+        llSplit = DataSplit(lData,self.K,self.NeedDev)
         lFileName = self.NameCenter.DataFileName()          
         for i in range(self.K):
             for j in range(len(lFileName[i])):
