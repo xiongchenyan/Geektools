@@ -69,7 +69,7 @@ class FoldNameGeneratorC:
         return self.RootDir + "/" + self.PredictSuffix
     
     def AllSubDir(self):
-        return [self.DataDir(),self.ParaDir(),self.EvaDir(),self.ConfDir(),self.SubDir(),self.PredictDir()]
+        return [self.DataDir(),self.ParaDir(),self.EvaDir(),self.ConfDir(),self.SubDir(),self.PredictDir(),self.OutDir()]
     
     def CreateDir(self):
         for DirName in self.AllSubDir():
