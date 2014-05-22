@@ -14,7 +14,7 @@ from cxBase.KeyFileReader import KeyFileReaderC
 import sys
 from cxBase.base import cxConf
 def ShowConf():
-    print "in\nrootdir\nK\nkeyindex 0\n"
+    print "in\nrootdir\nK\nkeyindex 0\ngzip false"
     
     
     
@@ -30,9 +30,12 @@ Namer =  FoldNameGeneratorC(sys.argv[1])
 InName = conf.GetConf('in')
 K = int(conf.GetConf('K'))
 KeyIndex = int(conf.GetConf('keyindex'))
+UseGzip = bool(conf.GetConf('gzip','true'))
+
 #read num of key
 KeyReader = KeyFileReaderC()
 KeyReader.KeyIndex = KeyIndex
+KeyReader.UseGzip = UseGzip
 KeyReader.open(InName)
 
 KeyCnt = 0
