@@ -72,7 +72,10 @@ for lvCol in KeyReader:
         out.close()
         print "split [%d] done" %(OutCnt)
         OutCnt += 1
-        out = open(Namer.DataDir() + "/test_%d" %(OutCnt),'w')
+        if UseGzip:
+            out = gzip.open(Namer.DataDir() + "/test_%d" %(OutCnt),'w')
+        else:
+            out = open(Namer.DataDir() + "/test_%d" %(OutCnt),'w')
         cnt = 0
         
 out.close()
