@@ -72,7 +72,9 @@ class CVParaResCollectorC(cxBaseC):
     
     
     def Process(self):
-        lEvaFName = self.GetEvaResFName()        
+        lEvaFName = self.GetEvaResFName()
+        #same result, prefer smaller para id as default.
+        lEvaFName.sort(key=lambda item:self.SplitFoldParaId(item)[1])        
         for EvaName in lEvaFName:
             FoldId,ParaId = self.SplitFoldParaId(EvaName)
             EvaMetric = self.LoadEvaMetric(EvaName)
