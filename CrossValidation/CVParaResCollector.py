@@ -49,7 +49,7 @@ class CVParaResCollectorC(cxBaseC):
         self.RootDir = self.Namer.RootDir
         self.K = self.Namer.K
         conf = cxConf(ConfIn)
-        self.Reverse = bool(conf.GetConf('bigfirst'))        
+        self.Reverse = bool(conf.GetConf('bigfirst',self.Reverse))        
         return True
     
     
@@ -82,7 +82,7 @@ class CVParaResCollectorC(cxBaseC):
                 continue
             if (self.Reverse & (self.hFoldBestPara[FoldId][1] < EvaMetric)) | ( (not self.Reverse) & (self.hFoldBestPara[FoldId][1] > EvaMetric)):
                 self.hFoldBestPara[FoldId] = [ParaId,EvaMetric]
-                print "get better para fold[%d] [%d,%s]" %(FoldId,ParaId,str(EvaMetric))
+                print "get better para fold [%d] [%d,%s]" %(FoldId,ParaId,str(EvaMetric))
         return dict(self.hFoldBestPara)
     
 
