@@ -31,7 +31,7 @@ class StatisticSignificantTestC(cxBaseC):
 #         self.MaxP = float(conf.GetConf('maxp',self.MaxP))
         self.lName = conf.GetConf('methodname',[])
         self.lBaseName = conf.GetConf('baseline',[])
-        self.lResInName = conf.GetConf('resinname',[])
+        self.lResInName = conf.GetConf('methodevares',[])
         
     @staticmethod
     def ShowConf():
@@ -70,7 +70,7 @@ class StatisticSignificantTestC(cxBaseC):
                 if not lBaseName[j] in lName:
                     lThisMethodRes.append(AdhocMeasureC())
                     continue
-                p = lName.index[lBaseName[j]]
+                p = lName.index(lBaseName[j])
                 lMeasure = lPerQMeasure[i]
                 lBaseMeasure = lPerQMeasure[p]
                 print "testing [%s] vs [%s]" %(lName[i],lBaseName[j])
@@ -136,7 +136,7 @@ class StatisticSignificantTestC(cxBaseC):
 class FisherRandomizationTestC(StatisticSignificantTestC):
     
     def CalcPValue(self,lTarget,lBase):
-        TotalTest = 1000
+        TotalTest = 2000
         Diff = sum(lTarget) / float(len(lTarget)) - sum(lBase) / float(len(lBase))
         cnt = 0.0
         for i in range(TotalTest):

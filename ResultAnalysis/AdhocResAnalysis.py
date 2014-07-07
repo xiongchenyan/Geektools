@@ -40,6 +40,7 @@ class AdhocResAnalysisC(cxBaseC):
         self.lTestSign = ["\\dagger","\\ddagger","\\mathsection","\\mathparagraph"] #latex sign for significant label
         self.lTestName = []
         self.llStatTestRes = []
+        self.Caption = ""
         
         
     def SetConf(self,ConfIn):
@@ -48,17 +49,27 @@ class AdhocResAnalysisC(cxBaseC):
         lMethodFName = conf.GetConf('methodevares',[])
         for i in range(len(lMethodName)):
             self.LoadEvaResForMethod(lMethodFName[i],lMethodName[i])
+        
+        '''
+        fill all methods' empty qid result by baseline's TBD
+        '''    
+            
+            
+            
+            
+            
         lMainMeasure = conf.GetConf('mainmeasure', 'err')
         if type(lMainMeasure) == list:
             self.hMainMeasure = dict(zip(lMainMeasure,range(len(lMainMeasure))))
         else:
             self.hMainMeasure[lMainMeasure] = 0
         self.TestCenter.SetConf(ConfIn)
+        self.Caption = conf.GetConf('caption')
         return True
     
     @staticmethod
     def ShowConf():
-        print "methodname baseline#x\nmethodevares\nmainmeasure err"
+        print "methodname baseline#x\nmethodevares\nmainmeasure err\ncaption"
         
     
     
@@ -106,9 +117,10 @@ class AdhocResAnalysisC(cxBaseC):
             Target = hMeasure[item].GetMeasure(MainMeasureName)
             Base = hBaseMeasure[item].GetMeasure(MainMeasureName)
             
-            if (Base != 0) &  abs(float(Target - Base)/Base) < RandomBase:
-                Tie += 1
-                continue
+            if (Base != 0):
+                if (abs(float(Target - Base)/Base) < RandomBase):
+                    Tie += 1
+                    continue
             if Target > Base:
                 Win += 1
             if Target == Base:
@@ -118,6 +130,48 @@ class AdhocResAnalysisC(cxBaseC):
         
         return Win,Loss,Tie
     
+    def WinLossTieTable(self,lEvaMethodName):
+        '''
+        form win loss tie table for methods in eva method name
+        '''
+        lName = []
+        lPos = []
+        #get position
+        for name in lEvaMethodName:
+            if not name in self.lMethodName:
+                continue
+            pos = self.lMethodName.index(name)
+            lPos.append(pos)
+            lName.append(name)
+        
+        
+        FullTable = ""    
+        TableHead = ""
+        
+        NumOfCol = len(lName) + 1
+        TableHead += "\\begin{table*}\\centering\\caption{ \label{tab. }}\n"
+        TableHead += "\\begin{tabular}{|%s}\n" %('c|'*NumOfCol)
+        TableHead += '\\hline\n'
+        
+        
+        FullTable += TableHead + "\n"
+        for i in range(len(lName)):
+            TableRow = "\\texttt{%s}" %(lName[i])
+            for j in range(len(lName)):
+                if j == i:
+                    TableRow += "& NA/NA/NA"
+                    continue
+                Win,Loss,Tie = AdhocResAnalysisC.WinLossTie(self.lhMethodMeasure[lPos[j]], self.lhMethodMeasure[lPos[i]])
+                TableRow += "&%d/%d/%d" %(Win,Loss,Tie)
+            TableRow += '\\\\\n'
+            FullTable += TableRow
+        
+        FullTable += '\\hline\end{tabular}\end{table*}'
+        
+        return FullTable
+          
+            
+        
     
     @staticmethod
     def WinLossNumBin(hBaseMeasure,hMeasure,MainMeasureName = 'err'):
@@ -129,7 +183,7 @@ class AdhocResAnalysisC(cxBaseC):
             lRawRelGain.append(AdhocResAnalysisC().CalcRelGain(Base, Target))
             
         #bin them to target bin
-        return BinValue(lRawRelGain,n=20,BinSize=0.1)
+        return BinValue(lRawRelGain,n=10,BinSize=0.2)
     
     
     
@@ -152,7 +206,7 @@ class AdhocResAnalysisC(cxBaseC):
             pvalue = lRes[i].GetMeasure(Measure)
             print "measure [%s][%s] p = [%s] vs No. [%d] baseline" %(MethodName,Measure,pvalue,i)
             if pvalue < 0.05:
-                TestSignStr += self.lTestSign + ','
+                TestSignStr += self.lTestSign[i] + ','
                 
         return TestSignStr.strip(',')
                 
@@ -161,7 +215,8 @@ class AdhocResAnalysisC(cxBaseC):
     
     def FormResTable(self,caption='',label=''):
         #form a latex format table
-        
+        if caption == '':
+            caption = self.Caption
         self.PerformStatisTest()
         
         TableStr = "" #separated by \n for each row ^_^
@@ -177,11 +232,12 @@ class AdhocResAnalysisC(cxBaseC):
         return TableStr 
     
     
-    def FormResTableHead(self,caption = "",label = 'tab:AdHocEva'):
-        
+    def FormResTableHead(self,caption = '',label = 'tab:AdHocEva'):
+        if caption == '':
+            caption = self.Caption
         NumOfCol = AdhocMeasureC().NumOfMeasure() + len(self.hMainMeasure)*2 + 1
-        TableHead = "\\begin{table*}\\centering\\caption{%s\\label{%s}}" %(caption,label)
-        TableHead += "\\begin{tabular}{|%s}" %('c|'*NumOfCol)
+        TableHead = "\\begin{table*}\\centering\\caption{%s\\label{%s}}\n" %(caption,label)
+        TableHead += "\\begin{tabular}{|%s}\n" %('c|'*NumOfCol)
         TableHead += '\\hline\n'
         
         lMeasureName = AdhocMeasureC().MeasureName()
@@ -252,7 +308,7 @@ class AdhocResAnalysisC(cxBaseC):
         BarMaker.XLabel = 'Relative Rain'
         BarMaker.YLabel = 'Number of Query'
         BarMaker.lLegend = self.lMethodName
-        BarMaker.title = 'Per query relative gain'
+        BarMaker.title =  self.Caption
         BarMaker.Bar(FigOutName)                
         return True
     

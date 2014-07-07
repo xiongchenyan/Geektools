@@ -36,20 +36,26 @@ class BarPloterC(cxBaseC):
         
         opacity = 0.4
         error_config = {'ecolor': '0.3'}
-        fig, ax = plt.subplots(figsize=(9,3))
+        fig, ax = plt.subplots(figsize=(10,5))
         
         ax.tick_params(axis='both',which='major',labelsize=7)
+        MaxY = 0
+        MinY = 0
         for i in range(n_group):
             plt.bar(index + self.BarWidth * i, self.lY[i],self.BarWidth,
                     alpha=opacity,
                     color=self.ColorSeq[i%len(self.ColorSeq)],
                     error_kw=error_config,
                     label = self.lLegend[i])
+            MaxY = max(MaxY,max(self.lY[i]))
+            MinY = min(MinY,min(self.lY[i]))
         plt.xlim(index.min(), (index+self.BarWidth * n_group).max()*1.05)
+        plt.ylim(MinY-5.0,MaxY+5.0)
         plt.xlabel(self.XLabel)
         plt.ylabel(self.YLabel)
         plt.title(self.title)
         plt.xticks(index + self.BarWidth * n_group/2.0, self.X)
+#         plt.yticks(range(int(MinY)-1,int(MaxY)+2))
         plt.legend(prop={'size':10})
         print "draw finished, saving to [%s]" %(OutName)
         plt.savefig(OutName,format='eps',dpi=1000)
