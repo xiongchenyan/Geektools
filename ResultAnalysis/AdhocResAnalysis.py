@@ -27,14 +27,20 @@ from ScoreBin import *
 from cxBase.base import *
 from copy import deepcopy
 from FigureRelate.BarPloter import BarPloterC
-
+from StatisticSignificantTest import *
 class AdhocResAnalysisC(cxBaseC):
     
     def Init(self):
         self.hBaseMeasure = {} #qid->measure
-        self.lhMethodMeasure = [] #dim [method]
+        self.lhMethodMeasure = [] #dim [method], each dimension is a evaluation result dict (qid->measure)
         self.lMethodName = []        
         self.hMainMeasure = {'err':0} #method to focus
+        
+        self.TestCenter = FisherRandomizationTestC()
+        self.lTestSign = ["\\dagger","\\ddagger","\\mathsection","\\mathparagraph"] #latex sign for significant label
+        self.lTestName = []
+        self.llStatTestRes = []
+        
         
     def SetConf(self,ConfIn):
         conf = cxConf(ConfIn)
@@ -47,6 +53,7 @@ class AdhocResAnalysisC(cxBaseC):
             self.hMainMeasure = dict(zip(lMainMeasure,range(len(lMainMeasure))))
         else:
             self.hMainMeasure[lMainMeasure] = 0
+        self.TestCenter.SetConf(ConfIn)
         return True
     
     @staticmethod
@@ -81,9 +88,12 @@ class AdhocResAnalysisC(cxBaseC):
     
     @staticmethod
     def CalcRelGain(Base,Target):
+        RandomBase = 0.01
         if 0 == Base:
             return float(Target > 0)
-        RelGain = Target / Base - 1.0        
+        RelGain = Target / Base - 1.0
+        if abs(RelGain) < RandomBase:
+            RelGain = 0        
         return RelGain
     
     @staticmethod
@@ -91,10 +101,14 @@ class AdhocResAnalysisC(cxBaseC):
         Win = 0
         Loss = 0
         Tie = 0
-        
+        RandomBase = 0.01
         for item in hMeasure:
             Target = hMeasure[item].GetMeasure(MainMeasureName)
             Base = hBaseMeasure[item].GetMeasure(MainMeasureName)
+            
+            if (Base != 0) &  abs(float(Target - Base)/Base) < RandomBase:
+                Tie += 1
+                continue
             if Target > Base:
                 Win += 1
             if Target == Base:
@@ -119,8 +133,37 @@ class AdhocResAnalysisC(cxBaseC):
     
     
     
+    def PerformStatisTest(self):
+        '''
+        read and perform statistic test, by class in StatiticSigificant test, store in self.llStatTestRes (method * baseline method, p)
+        will be used in form res table row for method
+        '''
+        print "performing stat test"
+        self.lTestName,self.llStatTestRes = self.TestCenter.Process()
+        return self.lTestName,self.llStatTestRes
+    
+    def FetchTestRes(self,MethodName,Measure):
+        Pos = self.lTestName.index(MethodName)
+        lRes = self.llStatTestRes[Pos]
+        TestSignStr = ""
+        if len(lRes) > len(self.lTestSign):
+            print 'need more test sign [%d] < [%d]' (len(self.lTestSign) < len(lRes))
+        for i in range(len(lRes)):
+            pvalue = lRes[i].GetMeasure(Measure)
+            print "measure [%s][%s] p = [%s] vs No. [%d] baseline" %(MethodName,Measure,pvalue,i)
+            if pvalue < 0.05:
+                TestSignStr += self.lTestSign + ','
+                
+        return TestSignStr.strip(',')
+                
+            
+    
+    
     def FormResTable(self,caption='',label=''):
         #form a latex format table
+        
+        self.PerformStatisTest()
+        
         TableStr = "" #separated by \n for each row ^_^
         
         
@@ -137,7 +180,6 @@ class AdhocResAnalysisC(cxBaseC):
     def FormResTableHead(self,caption = "",label = 'tab:AdHocEva'):
         
         NumOfCol = AdhocMeasureC().NumOfMeasure() + len(self.hMainMeasure)*2 + 1
-        
         TableHead = "\\begin{table*}\\centering\\caption{%s\\label{%s}}" %(caption,label)
         TableHead += "\\begin{tabular}{|%s}" %('c|'*NumOfCol)
         TableHead += '\\hline\n'
@@ -156,7 +198,14 @@ class AdhocResAnalysisC(cxBaseC):
         
         for Measure in AdhocMeasureC().MeasureName():
             score = hMeasure['mean'].GetMeasure(Measure)
-            TableRow += '&$%.3f$' %(score) 
+            TestStr = self.FetchTestRes(MethodName,Measure)
+            '''
+            add significant test result here
+            '''
+            TableRow += '&$%.3f^{%s}$' %(score,TestStr) 
+           
+            
+            
             if Measure in self.hMainMeasure:
                 if MethodName == 'baseline':
                     TableRow += "&NA&NA"
@@ -174,9 +223,11 @@ class AdhocResAnalysisC(cxBaseC):
     
     
     def DrawPerQGainFigure(self,FigOutName):
+        '''
         #draw a per q gain figure
         #now only ploting for on target measure        
         #create X and Ys
+        '''
         lY = []
         X = []
         for i in range(len(self.lMethodName)):

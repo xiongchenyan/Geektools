@@ -15,12 +15,12 @@ site.addsitedir('/bos/usr0/cx/PyCode/cxPyLib')
 from cxBase.Conf import cxConfC
 from cxBase.base import cxBaseC
 from AdhocEva.AdhocMeasure import *
-
+import math,random
 
 class StatisticSignificantTestC(cxBaseC):
     
     def Init(self):
-        self.MaxP = 0.05
+#         self.MaxP = 0.05
         self.lName = []
         self.lResInName = []
         self.lBaseName = []
@@ -28,14 +28,14 @@ class StatisticSignificantTestC(cxBaseC):
         
     def SetConf(self,ConfIn):
         conf = cxConfC(ConfIn)
-        self.MaxP = float(conf.GetConf('maxp',self.MaxP))
+#         self.MaxP = float(conf.GetConf('maxp',self.MaxP))
         self.lName = conf.GetConf('methodname',[])
         self.lBaseName = conf.GetConf('baseline',[])
         self.lResInName = conf.GetConf('resinname',[])
         
     @staticmethod
     def ShowConf():
-        print 'maxp\nmethodname\nbaseline\nresinname'
+        print 'methodname\nbaseline\nmethodevares'
         
     def ReadEvaRes(self):
         del self.lPerQMeasure[:]
@@ -53,6 +53,7 @@ class StatisticSignificantTestC(cxBaseC):
         '''
         lPerQMeasure must not have missing values, and must sortted by qid
         prefer to use conf and read myself, everything is ready then
+        return a method * base line method result matrix, each element a Measure, showing the p value
         '''
         if [] == lName: 
             self.ReadEvaRes()
@@ -65,22 +66,25 @@ class StatisticSignificantTestC(cxBaseC):
         for i in range(len(lPerQMeasure)):
             lThisMethodRes = []
             for j in range(len(lBaseName)):
+                
                 if not lBaseName[j] in lName:
                     lThisMethodRes.append(AdhocMeasureC())
                     continue
                 p = lName.index[lBaseName[j]]
                 lMeasure = lPerQMeasure[i]
                 lBaseMeasure = lPerQMeasure[p]
+                print "testing [%s] vs [%s]" %(lName[i],lBaseName[j])
                 Measure  = self.StaticTest(lMeasure,lBaseMeasure)
+                print "res [%s]" %(Measure.dumps())
                 lThisMethodRes.append(Measure)
             lResMtx.append(lThisMethodRes)
             
-        for i in range(len(lResMtx)):
-            for j in range(len(lResMtx[i])):
-                for name in AdhocMeasureC.MeasureName():
-                    if lResMtx[i][j].GetMeasure(name) >= self.MaxP:
-                        lResMtx[i][j].SetMeasure(name,0)
-        return lResMtx
+#         for i in range(len(lResMtx)):
+#             for j in range(len(lResMtx[i])):
+#                 for name in AdhocMeasureC.MeasureName():
+#                     if lResMtx[i][j].GetMeasure(name) >= self.MaxP:
+#                         lResMtx[i][j].SetMeasure(name,0)
+        return lName, lResMtx
     
     
     
@@ -102,6 +106,16 @@ class StatisticSignificantTestC(cxBaseC):
         for name in AdhocMeasureC.MeasureName():
             lTarget = [item.GetMeasure(name) for item in lPureMeasure]
             lBase = [item.GetMeasure(name) for item in lPureBase]
+            
+            '''    
+            check if target is better than base, if not, then set p value to 1 and do not do test
+            '''
+            if (len(lTarget) == 0) | (len(lBase) == 0):
+                Measure.SetMeasure(name,1)
+                continue
+            if (sum(lTarget) / float(len(lTarget))) <= (sum(lBase) / float(len(lBase))):
+                Measure.SetMeasure(name,1)
+                continue
             Measure.SetMeasure(name, self.CalcPValue(lTarget,lBase))
             
         return Measure
@@ -122,11 +136,25 @@ class StatisticSignificantTestC(cxBaseC):
 class FisherRandomizationTestC(StatisticSignificantTestC):
     
     def CalcPValue(self,lTarget,lBase):
-        p = 1
-        
+        TotalTest = 1000
+        Diff = sum(lTarget) / float(len(lTarget)) - sum(lBase) / float(len(lBase))
+        cnt = 0.0
+        for i in range(TotalTest):
+            lA,lB = self.RandomExchange(lTarget, lBase)
+            ThisDiff = sum(lA) / float(len(lA)) - sum(lB) / float(len(lB))
+            if ThisDiff > Diff:
+                cnt += 1.0
+        p = cnt / float(TotalTest)
         return p
         
         
+    def RandomExchange(self,lTarget,lBase):
+        lA = list(lTarget)
+        lB = list(lBase)
         
+        for i in range(len(lTarget)):
+            if random.randint(0,1):
+                lA[i],lB[i] = lB[i],lA[i]
+        return lA,lB    
         
         
