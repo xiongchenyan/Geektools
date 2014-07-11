@@ -53,8 +53,9 @@ class AdhocResAnalysisC(cxBaseC):
         '''
         fill all methods' empty qid result by baseline's TBD
         '''    
-            
-            
+        for i in range(len(self.lhMethodMeasure)):
+            self.lhMethodMeasure[i] = AdhocMeasureC.FillMissEvaByBaseline(self.lhMethodMeasure[i], self.hBaseMeasure)    
+            print "len [%d]" %(len(self.lhMethodMeasure[i]))
             
             
             
@@ -74,7 +75,7 @@ class AdhocResAnalysisC(cxBaseC):
     
     
     def LoadEvaResForMethod(self,ResFName,MeasureName):
-        lMeasure = ReadPerQEva(ResFName,True)
+        lMeasure = AdhocMeasureC.ReadPerQEva(ResFName,True)
         hMeasure = {}
         for Measure in lMeasure:
             hMeasure[Measure[0]] = Measure[1]
@@ -114,6 +115,8 @@ class AdhocResAnalysisC(cxBaseC):
         Tie = 0
         RandomBase = 0.01
         for item in hMeasure:
+            if 'mean' == item:
+                continue
             Target = hMeasure[item].GetMeasure(MainMeasureName)
             Base = hBaseMeasure[item].GetMeasure(MainMeasureName)
             
@@ -153,6 +156,10 @@ class AdhocResAnalysisC(cxBaseC):
         TableHead += "\\begin{tabular}{|%s}\n" %('c|'*NumOfCol)
         TableHead += '\\hline\n'
         
+        for i in range(len(lName)):
+            TableHead += "& \\texttt{%s}" %(lName[i])
+        TableHead += '\\\\ \\hline\n'
+        
         
         FullTable += TableHead + "\n"
         for i in range(len(lName)):
@@ -178,6 +185,8 @@ class AdhocResAnalysisC(cxBaseC):
         #get the raw relative gain number
         lRawRelGain = []
         for item in hMeasure:
+            if item == 'mean':
+                continue
             Base = hBaseMeasure[item].GetMeasure(MainMeasureName)
             Target = hMeasure[item].GetMeasure(MainMeasureName)
             lRawRelGain.append(AdhocResAnalysisC().CalcRelGain(Base, Target))
