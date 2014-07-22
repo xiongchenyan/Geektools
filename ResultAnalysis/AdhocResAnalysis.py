@@ -51,14 +51,14 @@ class AdhocResAnalysisC(cxBaseC):
             self.LoadEvaResForMethod(lMethodFName[i],lMethodName[i])
         print "add non present q baseline value"
         self.AddBaselineQPerform()
-        
+
         '''
         fill all methods' empty qid result by baseline's TBD
         '''    
         for i in range(len(self.lhMethodMeasure)):
             self.lhMethodMeasure[i] = AdhocMeasureC.FillMissEvaByBaseline(self.lhMethodMeasure[i], self.hBaseMeasure)    
             print "len [%d]" %(len(self.lhMethodMeasure[i]))          
-
+           
         lMainMeasure = conf.GetConf('mainmeasure', 'err')
         if type(lMainMeasure) == list:
             self.hMainMeasure = dict(zip(lMainMeasure,range(len(lMainMeasure))))
