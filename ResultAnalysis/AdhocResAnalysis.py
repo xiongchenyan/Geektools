@@ -42,6 +42,8 @@ class AdhocResAnalysisC(cxBaseC):
         lMethodFName = conf.GetConf('methodevares',[])
         for i in range(len(lMethodName)):
             self.LoadEvaResForMethod(lMethodFName[i],lMethodName[i])
+        print "add non present q baseline value"
+        self.AddBaselineQPerform()
         lMainMeasure = conf.GetConf('mainmeasure', 'err')
         if type(lMainMeasure) == list:
             self.hMainMeasure = dict(zip(lMainMeasure,range(len(lMainMeasure))))
@@ -68,6 +70,21 @@ class AdhocResAnalysisC(cxBaseC):
         self.lhMethodMeasure.append(deepcopy(hMeasure))
         return True
     
+    def AddBaselineQPerform(self):
+        
+        for hMeasure in self.lhMethodMeasure:
+            for item in self.hBaseMeasure:
+                if not item in hMeasure:
+                    hMeasure[item] = self.hBaseMeasure[item]
+            Total = AdhocMeasureC()
+            Cnt = 0
+            for item,value in hMeasure.items():
+                if item != 'mean':
+                    Total += value
+                    Cnt += 1.0
+            if Cnt != 0:
+                hMeasure['mean'] = Total / Cnt
+            
     
     @staticmethod
     def RelativeGain(hBaseMeasure,hMeasure,MainMeasureName='err'):
