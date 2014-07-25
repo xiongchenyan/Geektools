@@ -192,7 +192,78 @@ class AdhocResAnalysisC(cxBaseC):
         
         return FullTable
           
+    def MostWinLoss(self,lEvaMethodName,hQuery):
+        '''
+        lEvaMethodName contains methods to eva
+        hQuery is the mapping from qid to query
+        '''        
+        lName = []
+        lPos = []
+        #get position
+        for name in lEvaMethodName:
+            if not name in self.lMethodName:
+                continue
+            pos = self.lMethodName.index(name)
+            lPos.append(pos)
+            lName.append(name)
+        
+        #for each method, minus it with hBase, sort, and get top 5 and bottom 5
+        lHelp = [] #each dim is a query list for this method
+        lHurt = [] #[method], as lHelp
+        lNone = []
+        NumOfRes = 5
+        for i in range(len(lName)):
+            name = lName[i]
+            pos = lPos[i]
+            hMeasure = dict(self.lhMethodMeasure[pos])
+            if 'mean' in hMeasure:
+                del hMeasure['mean']
+            for qid in hMeasure:
+                hMeasure[qid] -= self.hBaseMeasure[qid]
             
+            MainMeasure = self.hMainMeasure.items()[0][0]    
+            lEvaRes = [[qid, measure.GetMeasure(MainMeasure)] for qid, measure in hMeasure.items()]
+            lEvaRes.sort(key=lambda item:item[1],reverse = True)
+            lHelp.append([[hQuery[qid],measure] for qid,measure in lEvaRes[:NumOfRes]])
+            lHurt.append([[hQuery[qid],measure] for qid,measure in lEvaRes[len(lEvaRes)-NumOfRes:]])
+            lNone.append([[hQuery[qid],measure] for qid,measure in lEvaRes[len(lEvaRes) / 2-NumOfRes / 2:len(lEvaRes) / 2 +NumOfRes / 2]])
+        #print res:
+#         for i in range(len(lName)):
+#             print lName[i]
+#             print "helped:\n"
+#             for query,measure in lHelp[i]:
+#                 print '%s\t%f' %(query,measure)
+#                 
+# #             print '\nnone:\n'
+# #             for query,measure in lNone[i]:
+# #                 print '%s\t%f' %(query,measure)
+#             
+#             print '\nhurt:\n'
+#             for query,measure in lHurt[i]:
+#                 print '%s\t%f' %(query,measure)
+#             print '\n\n'
+#         
+        
+        print '\t'.join(lName)
+        
+        for j in range(len(lHelp[0])):
+            s = ''
+            for i in range(len(lHelp)):
+                s += lHelp[i][j][0] + '\t'
+            print s.strip()
+        print '\n'
+        for j in range(len(lHurt[0])):
+            s = ''
+            for i in range(len(lHurt)):
+                s += lHurt[i][j][0] + '\t'
+            print s.strip()
+        
+            
+        return
+             
+            
+        
+        
         
     
     @staticmethod
