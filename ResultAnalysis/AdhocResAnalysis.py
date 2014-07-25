@@ -227,23 +227,7 @@ class AdhocResAnalysisC(cxBaseC):
             lHelp.append([[hQuery[qid],measure] for qid,measure in lEvaRes[:NumOfRes]])
             lHurt.append([[hQuery[qid],measure] for qid,measure in lEvaRes[len(lEvaRes)-NumOfRes:]])
             lNone.append([[hQuery[qid],measure] for qid,measure in lEvaRes[len(lEvaRes) / 2-NumOfRes / 2:len(lEvaRes) / 2 +NumOfRes / 2]])
-        #print res:
-#         for i in range(len(lName)):
-#             print lName[i]
-#             print "helped:\n"
-#             for query,measure in lHelp[i]:
-#                 print '%s\t%f' %(query,measure)
-#                 
-# #             print '\nnone:\n'
-# #             for query,measure in lNone[i]:
-# #                 print '%s\t%f' %(query,measure)
-#             
-#             print '\nhurt:\n'
-#             for query,measure in lHurt[i]:
-#                 print '%s\t%f' %(query,measure)
-#             print '\n\n'
-#         
-        
+               
         print '\t'.join(lName)
         
         for j in range(len(lHelp[0])):
@@ -257,6 +241,42 @@ class AdhocResAnalysisC(cxBaseC):
             for i in range(len(lHurt)):
                 s += lHurt[i][j][0] + '\t'
             print s.strip()
+        
+        
+        FullTable = ""    
+        TableHead = ""
+        
+        NumOfCol = len(lName) + 1
+        TableHead += "\\begin{table*}\\centering\\caption{ \label{tab. }}\n"
+        TableHead += "\\begin{tabular}{|%s}\n" %('l|'*NumOfCol)
+        TableHead += '\\hline\n'
+        
+        for i in range(len(lName)):
+            TableHead += "& \\texttt{%s}" %(lName[i])
+        TableHead += '\\\\ \\hline\n'       
+        
+        FullTable += TableHead + "\n"
+        
+        llHelpHurt = [lHelp,lHurt]
+        lHead = ['$\\uparrow$','$\\downarrow$']
+        for i in range(len(lHead)):
+            TableRow = lHead[i]
+            lData = llHelpHurt[i]
+            for data in lData:
+                #form a tabular for each data
+                NestTab = '\\begin{tabular}{@{}l@{}}'
+                for query,measure in data:
+                    NestTab += query + "\\\\"
+                NestTab.strip('\\')
+                NestTab += '\\end{tabular}'
+                TableRow += '&' + NestTab
+            TableRow += '\\\\ \\hline\n'
+            FullTable += TableRow
+        
+        FullTable += '\end{tabular}\end{table*}'
+        
+        print '\n\n'
+        print FullTable 
         
             
         return
