@@ -20,6 +20,9 @@ class BarPloterC(cxBaseC):
     def Init(self):
         self.BarWidth = 0.1
         self.ColorSeq = 'rgcbkym'
+        self.cpool = [ '#bd2309', '#bbb12d', '#1480fa', '#14fa2f', '#000000',
+              '#faf214', '#2edfea', '#ea2ec4', '#ea2e40', '#cdcdcd',
+              '#577a4d', '#2e46c0', '#f59422', '#219774', '#8086d9' ]
         self.XLabel = ""
         self.YLabel = ""
         self.lLegend = []
@@ -44,7 +47,7 @@ class BarPloterC(cxBaseC):
         for i in range(n_group):
             plt.bar(index + self.BarWidth * i, self.lY[i],self.BarWidth,
                     alpha=opacity,
-                    color=self.ColorSeq[i%len(self.ColorSeq)],
+                    color=self.cpool[i%len(self.cpool)],
                     error_kw=error_config,
                     label = self.lLegend[i])
             MaxY = max(MaxY,max(self.lY[i]))

@@ -135,10 +135,10 @@ class AdhocResAnalysisC(cxBaseC):
             Target = hMeasure[item].GetMeasure(MainMeasureName)
             Base = hBaseMeasure[item].GetMeasure(MainMeasureName)
             
-            if (Base != 0):
-                if (abs(float(Target - Base)/Base) < RandomBase):
-                    Tie += 1
-                    continue
+#             if (Base != 0):
+#                 if (abs(float(Target - Base)/Base) < RandomBase):
+#                     Tie += 1
+#                     continue
             if Target > Base:
                 Win += 1
             if Target == Base:
@@ -261,15 +261,15 @@ class AdhocResAnalysisC(cxBaseC):
             caption = self.Caption
         NumOfCol = AdhocMeasureC().NumOfMeasure() + len(self.hMainMeasure)*2 + 1
         TableHead = "\\begin{table*}\\centering\\caption{%s\\label{%s}}\n" %(caption,label)
-        TableHead += "\\begin{tabular}{|%s}\n" %('c|'*NumOfCol)
+        TableHead += "\\begin{tabular}{|%s}\n" %('l|'*NumOfCol)
         TableHead += '\\hline\n'
         
         lMeasureName = AdhocMeasureC().MeasureName()
-        TableHead += 'method'
+        TableHead += 'Method'
         for MeasureName in lMeasureName:
-            TableHead += "& %s" %(MeasureName)
+            TableHead += "& %s" %(MeasureName.upper())
             if MeasureName in self.hMainMeasure:
-                TableHead += "& relative Gain & Win/Loss/Tie"
+                TableHead += "& Relative Gain & Win/Loss/Tie"
         TableHead += '\\\\ \\hline\n'           
         return TableHead
     
@@ -329,7 +329,7 @@ class AdhocResAnalysisC(cxBaseC):
         BarMaker = BarPloterC()
         BarMaker.lY = lY
         BarMaker.X = X
-        BarMaker.XLabel = 'Relative Rain'
+        BarMaker.XLabel = 'Relative Gain'
         BarMaker.YLabel = 'Number of Query'
         BarMaker.lLegend = self.lMethodName
         BarMaker.title =  self.Caption
