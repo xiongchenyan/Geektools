@@ -266,7 +266,7 @@ class AdhocResAnalysisC(cxBaseC):
                 #form a tabular for each data
                 NestTab = '\\begin{tabular}{@{}l@{}}'
                 for query,measure in data:
-                    NestTab += query + "\\\\"
+                    NestTab += query + "\\\\ "
                 NestTab.strip('\\')
                 NestTab += '\\end{tabular}'
                 TableRow += '&' + NestTab
