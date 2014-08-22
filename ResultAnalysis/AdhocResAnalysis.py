@@ -211,7 +211,7 @@ class AdhocResAnalysisC(cxBaseC):
         lHelp = [] #each dim is a query list for this method
         lHurt = [] #[method], as lHelp
         lNone = []
-        NumOfRes = 5
+        NumOfRes = 20
         for i in range(len(lName)):
             name = lName[i]
             pos = lPos[i]
