@@ -28,6 +28,9 @@ from cxBase.base import *
 from copy import deepcopy
 from FigureRelate.BarPloter import BarPloterC
 from StatisticSignificantTest import *
+import matplotlib.pyplot as plt
+import json
+from ResultAnalysis.PearsonCoefficient import pearson
 class AdhocResAnalysisC(cxBaseC):
     
     def Init(self):
@@ -55,9 +58,9 @@ class AdhocResAnalysisC(cxBaseC):
         '''
         fill all methods' empty qid result by baseline's TBD
         '''    
-        for i in range(len(self.lhMethodMeasure)):
-            self.lhMethodMeasure[i] = AdhocMeasureC.FillMissEvaByBaseline(self.lhMethodMeasure[i], self.hBaseMeasure)    
-            print "len [%d]" %(len(self.lhMethodMeasure[i]))          
+#         for i in range(len(self.lhMethodMeasure)):
+#             self.lhMethodMeasure[i] = AdhocMeasureC.FillMissEvaByBaseline(self.lhMethodMeasure[i], self.hBaseMeasure)    
+#             print "len [%d]" %(len(self.lhMethodMeasure[i]))          
            
         lMainMeasure = conf.GetConf('mainmeasure', 'err')
         if type(lMainMeasure) == list:
@@ -428,6 +431,55 @@ class AdhocResAnalysisC(cxBaseC):
         return True
     
     
+    
+    
+    @staticmethod
+    def RelPerformVsBaseDifficulty(hBaseMeasure,hMeasure,MainMeasureName='map'):
+        '''
+        get relative gain/loss vs baseline performance
+        return lRelGain[Baseline res, rel performance]
+        '''
+        
+        lRelGain = []
+        for qid, measure in hMeasure.items():
+            if qid == 'mean':
+                continue
+            score = measure.GetMeasure(MainMeasureName)
+            if not qid in hBaseMeasure:
+                print '[%s] not in base' %(qid)
+                continue
+            BaseScore = hBaseMeasure[qid].GetMeasure(MainMeasureName)
+#             if score == BaseScore:
+#                 continue
+            lRelGain.append([BaseScore,score-BaseScore])
+        lRelGain.sort(key=lambda item:item[0])
+        return lRelGain
+    
+    
+    
+    def PlotPerformVsBaseDifficulty(self,OutName):
+        fig,axes = plt.subplots(nrows=len(self.lhMethodMeasure),ncols=1,figsize=(15,75))
+        
+        for i in range(len(self.lhMethodMeasure)):
+            hMeasure = self.lhMethodMeasure[i]
+            lRelGain = AdhocResAnalysisC.RelPerformVsBaseDifficulty(self.hBaseMeasure, hMeasure)
+            print self.lMethodName[i]
+#             print json.dumps(lRelGain,indent=1)
+            x = [item[0] for item in lRelGain]
+            y = [item[1] for item in lRelGain]
+            
+            print 'pearson: [%f]' %(pearson(x,y))
+            axes[i].plot(x,y,'go')
+            axes[i].set_xlim(x[0]-0.05, x[len(x)-1]*1.05)
+            axes[i].set_ylim(min(y)-0.2,max(y)+0.2)
+            axes[i].set_xlabel('LM Err')
+            axes[i].set_ylabel('Rel Err')
+            axes[i].set_title(self.lMethodName[i])
+        plt.subplots_adjust(hspace = 1)
+        plt.savefig(OutName,format='pdf')
+        return
+        
+            
     
         
         
