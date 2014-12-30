@@ -135,20 +135,21 @@ class StatisticSignificantTestC(cxBaseC):
     
 class FisherRandomizationTestC(StatisticSignificantTestC):
     
-    def CalcPValue(self,lTarget,lBase):
+    @staticmethod
+    def CalcPValue(lTarget,lBase):
         TotalTest = 2000
         Diff = sum(lTarget) / float(len(lTarget)) - sum(lBase) / float(len(lBase))
         cnt = 0.0
         for i in range(TotalTest):
-            lA,lB = self.RandomExchange(lTarget, lBase)
+            lA,lB = FisherRandomizationTestC.RandomExchange(lTarget, lBase)
             ThisDiff = sum(lA) / float(len(lA)) - sum(lB) / float(len(lB))
             if ThisDiff > Diff:
                 cnt += 1.0
         p = cnt / float(TotalTest)
         return p
         
-        
-    def RandomExchange(self,lTarget,lBase):
+    @staticmethod
+    def RandomExchange(lTarget,lBase):
         lA = list(lTarget)
         lB = list(lBase)
         
