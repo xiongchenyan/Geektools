@@ -137,7 +137,7 @@ class FisherRandomizationTestC(StatisticSignificantTestC):
     
     @staticmethod
     def CalcPValue(lTarget,lBase):
-        TotalTest = 2000
+        TotalTest = 10000
         Diff = sum(lTarget) / float(len(lTarget)) - sum(lBase) / float(len(lBase))
         cnt = 0.0
         for i in range(TotalTest):
