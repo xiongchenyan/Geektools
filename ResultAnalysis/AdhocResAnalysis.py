@@ -52,6 +52,7 @@ class AdhocResAnalysisC(cxBaseC):
         lMethodFName = conf.GetConf('methodevares',[])
         for i in range(len(lMethodName)):
             self.LoadEvaResForMethod(lMethodFName[i],lMethodName[i])
+        self.hBaseMeasure = deepcopy(self.lhMethodMeasure[0])
         print "add non present q baseline value"
         self.AddBaselineQPerform()
 
@@ -74,7 +75,7 @@ class AdhocResAnalysisC(cxBaseC):
     @staticmethod
     def ShowConf():
         print "methodname baseline#x\nmethodevares\nmainmeasure err\ncaption"
-        
+        FisherRandomizationTestC.ShowConf()
     
     
     def LoadEvaResForMethod(self,ResFName,MeasureName):
@@ -83,9 +84,9 @@ class AdhocResAnalysisC(cxBaseC):
         for Measure in lMeasure:
             hMeasure[Measure[0]] = Measure[1]
         
-        if MeasureName == 'baseline':
-            self.hBaseMeasure = deepcopy(hMeasure)
-            return True
+#         if MeasureName == 'baseline':
+#             self.hBaseMeasure = deepcopy(hMeasure)
+#             return True
         self.lMethodName.append(MeasureName)
         self.lhMethodMeasure.append(deepcopy(hMeasure))
         return True
@@ -341,7 +342,7 @@ class AdhocResAnalysisC(cxBaseC):
         
         
         TableStr += self.FormResTableHead(caption, label)
-        TableStr += self.FormTableRowForMethod(self.hBaseMeasure, 'baseline')
+#         TableStr += self.FormTableRowForMethod(self.hBaseMeasure, self.lMethodName[0])
         for i in range(len(self.lhMethodMeasure)):
             hMeasure = self.lhMethodMeasure[i]
             MethodName = self.lMethodName[i]
@@ -381,7 +382,7 @@ class AdhocResAnalysisC(cxBaseC):
             
             
             if Measure in self.hMainMeasure:
-                if MethodName == 'baseline':
+                if MethodName == self.lMethodName[0]:
                     TableRow += "&NA&NA"
                 else:
                     RelGain = AdhocResAnalysisC().RelativeGain(self.hBaseMeasure,hMeasure,Measure)
