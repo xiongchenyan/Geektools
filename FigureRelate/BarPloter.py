@@ -32,7 +32,7 @@ class BarPloterC(cxBaseC):
         self.title = ""
         
         
-    def Bar(self,OutName):
+    def Bar(self,OutName,Format='eps'):
         n_group = len(self.lY)
         index = np.arange(len(self.X)) * n_group
         self.BarWidth = 1.0 / (n_group + 2) * n_group
@@ -61,7 +61,7 @@ class BarPloterC(cxBaseC):
 #         plt.yticks(range(int(MinY)-1,int(MaxY)+2))
         plt.legend(prop={'size':10})
         print "draw finished, saving to [%s]" %(OutName)
-        plt.savefig(OutName,format='eps',dpi=1000)
+        plt.savefig(OutName,format=Format,dpi=1000)
         
         return True
     

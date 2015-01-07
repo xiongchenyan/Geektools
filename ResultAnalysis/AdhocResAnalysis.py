@@ -405,7 +405,7 @@ class AdhocResAnalysisC(cxBaseC):
         '''
         lY = []
         X = []
-        for i in range(len(self.lMethodName)):
+        for i in range(1,len(self.lMethodName)):
             lBin = self.WinLossNumBin(self.hBaseMeasure,
                                          self.lhMethodMeasure[i],
                                          self.hMainMeasure.keys()[0])
@@ -426,9 +426,9 @@ class AdhocResAnalysisC(cxBaseC):
         BarMaker.X = X
         BarMaker.XLabel = 'Relative Gain'
         BarMaker.YLabel = 'Number of Query'
-        BarMaker.lLegend = self.lMethodName
+        BarMaker.lLegend = self.lMethodName[1:]
         BarMaker.title =  self.Caption
-        BarMaker.Bar(FigOutName)                
+        BarMaker.Bar(FigOutName,'pdf')                
         return True
     
     
