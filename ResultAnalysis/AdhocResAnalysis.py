@@ -151,7 +151,7 @@ class AdhocResAnalysisC(cxBaseC):
             if Target < Base:
                 Loss += 1       
         
-        return Win,Loss,Tie
+        return Win,Tie,Loss
     
     def WinLossTieTable(self,lEvaMethodName):
         '''
@@ -365,7 +365,7 @@ class AdhocResAnalysisC(cxBaseC):
         for MeasureName in lMeasureName:
             TableHead += "& %s" %(MeasureName.upper())
             if MeasureName in self.hMainMeasure:
-                TableHead += "& Relative Gain & Win/Loss/Tie"
+                TableHead += "& Relative Gain & Win/Tie/Loss"
         TableHead += '\\\\ \\hline\n'           
         return TableHead
     
