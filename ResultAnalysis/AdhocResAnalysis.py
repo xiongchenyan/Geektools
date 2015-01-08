@@ -47,6 +47,7 @@ class AdhocResAnalysisC(cxBaseC):
         
         
     def SetConf(self,ConfIn):
+        cxBaseC.SetConf(self, ConfIn)
         conf = cxConf(ConfIn)
         lMethodName = conf.GetConf('methodname', [])
         lMethodFName = conf.GetConf('methodevares',[])
