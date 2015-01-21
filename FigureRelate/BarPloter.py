@@ -40,9 +40,9 @@ class BarPloterC(cxBaseC):
         
         opacity = 0.4
         error_config = {'ecolor': '0.3'}
-        fig, ax = plt.subplots(figsize=(6,3.4))
+        fig, ax = plt.subplots(figsize=(5,4))
         
-        ax.tick_params(axis='both',which='major',labelsize=7)
+        ax.tick_params(axis='both',which='major',labelsize=15)
         MaxY = 0
         MinY = 0
         for i in range(n_group):
@@ -53,15 +53,17 @@ class BarPloterC(cxBaseC):
                     label = r'\textbf{%s}' %(self.lLegend[i]))
             MaxY = max(MaxY,max(self.lY[i]))
             MinY = min(MinY,min(self.lY[i]))
-        plt.xlim(index.min(), (index+self.BarWidth * n_group).max()*1.05)
-        plt.ylim(MinY*1.5,MaxY*1.5)
+        plt.xlim(index.min() - 0.05, (index+self.BarWidth * n_group).max()*1.05)
+        plt.ylim(MinY*1.05,MaxY*1.3)
         plt.xlabel(self.XLabel)
         plt.ylabel(self.YLabel)
         if self.title != "":
             plt.title(self.title)
+        print json.dumps(self.X)
         plt.xticks(index + self.BarWidth * n_group/2.0, self.X)
 #         plt.yticks(range(int(MinY)-1,int(MaxY)+2))
-        plt.legend(prop={'size':7})
+        plt.legend(prop={'size':12})
+#         plt.gcf().tight_layout()
         print "draw finished, saving to [%s]" %(OutName)
         plt.savefig(OutName,format=Format,dpi=1000)
         
