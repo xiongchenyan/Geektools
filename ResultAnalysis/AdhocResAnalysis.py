@@ -44,7 +44,7 @@ class AdhocResAnalysisC(cxBaseC):
         self.lTestName = []
         self.llStatTestRes = []
         self.Caption = ""
-        
+        self.BaseName = ""
         
     def SetConf(self,ConfIn):
         cxBaseC.SetConf(self, ConfIn)
@@ -53,10 +53,13 @@ class AdhocResAnalysisC(cxBaseC):
         lMethodFName = conf.GetConf('methodevares',[])
         for i in range(len(lMethodName)):
             self.LoadEvaResForMethod(lMethodFName[i],lMethodName[i])
-        self.hBaseMeasure = deepcopy(self.lhMethodMeasure[0])
+        
+        self.BaseName = self.conf.GetConf('relbase')
+        p = self.lMethodName.index(self.BaseName)
+        self.hBaseMeasure = deepcopy(self.lhMethodMeasure[p])
         print "add non present q baseline value"
         self.AddBaselineQPerform()
-
+        
         '''
         fill all methods' empty qid result by baseline's TBD
         '''    
@@ -109,18 +112,17 @@ class AdhocResAnalysisC(cxBaseC):
             
     
     @staticmethod
-    def RelativeGain(hBaseMeasure,hMeasure,MainMeasureName='err'):
+    def RelativeGain(hBaseMeasure,hMeasure,MainMeasureName='err',RandomBase = 0.01):
         if (not 'mean' in hBaseMeasure) | (not 'mean' in hMeasure):
             print "mean value not calculate in calcing relative gain"
             return -1
         
         Base = hBaseMeasure['mean'].GetMeasure(MainMeasureName)
         Target = hMeasure['mean'].GetMeasure(MainMeasureName)
-        return AdhocResAnalysisC().CalcRelGain(Base,Target)
+        return AdhocResAnalysisC().CalcRelGain(Base,Target,RandomBase)
     
     @staticmethod
-    def CalcRelGain(Base,Target):
-        RandomBase = 0.01
+    def CalcRelGain(Base,Target,RandomBase = 0.01):
         if 0 == Base:
             return float(Target > 0)
         RelGain = Target / Base - 1.0
@@ -321,7 +323,7 @@ class AdhocResAnalysisC(cxBaseC):
         lRes = self.llStatTestRes[Pos]
         TestSignStr = ""
         if len(lRes) > len(self.lTestSign):
-            print 'need more test sign [%d] < [%d]' (len(self.lTestSign) < len(lRes))
+            print 'need more test sign [%d] < [%d]' %(len(self.lTestSign), len(lRes))
         for i in range(len(lRes)):
             pvalue = lRes[i].GetMeasure(Measure)
             print "measure [%s][%s] p = [%s] vs No. [%d] baseline" %(MethodName,Measure,pvalue,i)
@@ -355,7 +357,7 @@ class AdhocResAnalysisC(cxBaseC):
     def FormResTableHead(self,caption = '',label = 'tab:AdHocEva'):
         if caption == '':
             caption = self.Caption
-        NumOfCol = AdhocMeasureC().NumOfMeasure() + len(self.hMainMeasure)*2 + 1
+        NumOfCol = AdhocMeasureC().NumOfMeasure()*2 + len(self.hMainMeasure) + 1
         TableHead = "\\begin{table*}\\centering\\caption{%s\\label{%s}}\n" %(caption,label)
         TableHead += "\\begin{tabular}{|%s}\n" %('l|'*NumOfCol)
         TableHead += '\\hline\n'
@@ -363,9 +365,9 @@ class AdhocResAnalysisC(cxBaseC):
         lMeasureName = AdhocMeasureC().MeasureName()
         TableHead += 'Method'
         for MeasureName in lMeasureName:
-            TableHead += "& %s" %(MeasureName.upper())
+            TableHead += "& %s & Relative Gain" %(MeasureName.upper())
             if MeasureName in self.hMainMeasure:
-                TableHead += "& Relative Gain & Win/Tie/Loss"
+                TableHead += "& Win/Tie/Loss"
         TableHead += '\\\\ \\hline\n'           
         return TableHead
     
@@ -380,15 +382,18 @@ class AdhocResAnalysisC(cxBaseC):
             '''
             TableRow += '&$%.3f^{%s}$' %(score,TestStr) 
            
-            
+            if MethodName == self.BaseName:
+                TableRow += "&NA"
+            else:
+                RelGain = AdhocResAnalysisC().RelativeGain(self.hBaseMeasure,hMeasure,Measure,0)
+                TableRow +="&$%.2f\\%%$ " %(100*RelGain)
             
             if Measure in self.hMainMeasure:
-                if MethodName == self.lMethodName[0]:
-                    TableRow += "&NA&NA"
+                if MethodName == self.BaseName:
+                    TableRow += "&NA"
                 else:
-                    RelGain = AdhocResAnalysisC().RelativeGain(self.hBaseMeasure,hMeasure,Measure)
                     Win,Loss,Tie = AdhocResAnalysisC().WinLossTie(self.hBaseMeasure, hMeasure, Measure)
-                    TableRow +="&$%.2f\\%%$ &%d/%d/%d " %(100*RelGain, Win,Loss,Tie)
+                    TableRow +="&%d/%d/%d " %(Win,Loss,Tie)
         
         TableRow += '\\\\\n'              
         return TableRow
@@ -412,11 +417,11 @@ class AdhocResAnalysisC(cxBaseC):
                                          self.hMainMeasure.keys()[0])
             X = [BinName for BinName,cnt in lBin]
             Y = [cnt for BinName,cnt in lBin]
-            for j in range(len(X)):
-                if X[j] != '0':
-                    Y[j] = -Y[j]
-                else:
-                    break
+#             for j in range(len(X)):
+#                 if X[j] != '0':
+#                     Y[j] = -Y[j]
+#                 else:
+#                     break
             
             lY.append(Y)
             
@@ -424,9 +429,10 @@ class AdhocResAnalysisC(cxBaseC):
             
         BarMaker = BarPloterC()
         BarMaker.lY = lY
-        BarMaker.X = X
-        BarMaker.XLabel = 'Relative Gain'
+        BarMaker.X = ['$%s$' %(item.replace('%','\%')) for item in X]
+        BarMaker.XLabel = 'Relative ERR Gain Over ListMLE'
         BarMaker.YLabel = 'Number of Query'
+#         BarMaker.lLegend = [r'\textbf{%s}' %(name) for name in self.lMethodName[1:]]
         BarMaker.lLegend = self.lMethodName[1:]
         BarMaker.title =  self.Caption
         BarMaker.Bar(FigOutName,'pdf')                
