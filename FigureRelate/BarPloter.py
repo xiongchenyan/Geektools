@@ -40,9 +40,9 @@ class BarPloterC(cxBaseC):
         
         opacity = 0.4
         error_config = {'ecolor': '0.3'}
-        fig, ax = plt.subplots(figsize=(5,4))
+        fig, ax = plt.subplots(figsize=(7.5,4))
         
-        ax.tick_params(axis='both',which='major',labelsize=15)
+        ax.tick_params(axis='both',which='major',labelsize=10)
         MaxY = 0
         MinY = 0
         for i in range(n_group):
@@ -54,7 +54,7 @@ class BarPloterC(cxBaseC):
             MaxY = max(MaxY,max(self.lY[i]))
             MinY = min(MinY,min(self.lY[i]))
         plt.xlim(index.min() - 0.05, (index+self.BarWidth * n_group).max()*1.05)
-        plt.ylim(MinY*1.05,MaxY*1.3)
+        plt.ylim(MinY*1.05,MaxY*1.05)
         plt.xlabel(self.XLabel)
         plt.ylabel(self.YLabel)
         if self.title != "":

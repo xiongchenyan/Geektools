@@ -31,6 +31,7 @@ from StatisticSignificantTest import *
 import matplotlib.pyplot as plt
 import json
 from ResultAnalysis.PearsonCoefficient import pearson
+from copy import deepcopy
 class AdhocResAnalysisC(cxBaseC):
     
     def Init(self):
@@ -45,6 +46,7 @@ class AdhocResAnalysisC(cxBaseC):
         self.llStatTestRes = []
         self.Caption = ""
         self.BaseName = ""
+#         self.AddBLPerformance = True
         
     def SetConf(self,ConfIn):
         cxBaseC.SetConf(self, ConfIn)
@@ -57,6 +59,8 @@ class AdhocResAnalysisC(cxBaseC):
         self.BaseName = self.conf.GetConf('relbase')
         p = self.lMethodName.index(self.BaseName)
         self.hBaseMeasure = deepcopy(self.lhMethodMeasure[p])
+#         self.AddBLPerformance = bool(int(self.conf.GetConf('addblforemptyq', 1)))
+#         if self.AddBLPerformance:
         print "add non present q baseline value"
         self.AddBaselineQPerform()
         
@@ -80,6 +84,28 @@ class AdhocResAnalysisC(cxBaseC):
     def ShowConf():
         print "methodname baseline#x\nmethodevares\nmainmeasure err\ncaption"
         FisherRandomizationTestC.ShowConf()
+    
+    
+    def __deepcopy__(self,memo):
+        res = AdhocResAnalysisC()
+        res.hBaseMeasure = deepcopy(self.hBaseMeasure, memo)
+        res.lhMethodMeasure = deepcopy(self.lhMethodMeasure,memo)
+        res.lMethodName = deepcopy(self.lMethodName,memo)
+        res.hMainMeasure = deepcopy(self.hMainMeasure,memo)
+        res.TestCenter = deepcopy(self.TestCenter,memo)
+        
+        
+        
+    
+    def __add__(self,Analysiser):
+        '''
+        the index in lMethodName must be the same
+        '''
+        res = AdhocResAnalysisC()
+        
+        
+        return res
+        
     
     
     def LoadEvaResForMethod(self,ResFName,MeasureName):
@@ -371,12 +397,23 @@ class AdhocResAnalysisC(cxBaseC):
         TableHead += '\\\\ \\hline\n'           
         return TableHead
     
-    def FormTableRowForMethod(self,hMeasure,MethodName):
+    def FormTableRowForMethod(self,hMeasure,MethodName,hBaseMeasure = {},DoTestMySelf = False,TargetTestStr = '\\mathsection'):
+        if hBaseMeasure == {}:
+            hBaseMeasure = self.hBaseMeasure
         TableRow = "\\texttt{%s}" %(MethodName)
         
         for Measure in AdhocMeasureC().MeasureName():
             score = hMeasure['mean'].GetMeasure(Measure)
-            TestStr = self.FetchTestRes(MethodName,Measure)
+            if DoTestMySelf:
+                lThisScore = [item[1].GetMeasure(Measure) for item in hMeasure.items() if item[0] !='mean']
+                lBaseScore = [item[1].GetMeasure(Measure) for item in hBaseMeasure.items() if item[0] !='mean']
+                TestStr = ""
+                p = FisherRandomizationTestC.CalcPValue(lThisScore, lBaseScore)
+                print "[%s] p = %f" %(MethodName,p)
+                if p < 0.05:
+                    TestStr = TargetTestStr                
+            else:
+                TestStr = self.FetchTestRes(MethodName,Measure)
             '''
             add significant test result here
             '''
@@ -385,18 +422,22 @@ class AdhocResAnalysisC(cxBaseC):
             if MethodName == self.BaseName:
                 TableRow += "&NA"
             else:
-                RelGain = AdhocResAnalysisC().RelativeGain(self.hBaseMeasure,hMeasure,Measure,0)
+                RelGain = AdhocResAnalysisC().RelativeGain(hBaseMeasure,hMeasure,Measure,0)
+                print 'RelGain [%f-%f=%f][%.2f]' %(hMeasure['mean'].GetMeasure(Measure), hBaseMeasure['mean'].GetMeasure(Measure),hMeasure['mean'].GetMeasure(Measure) - hBaseMeasure['mean'].GetMeasure(Measure),RelGain)
                 TableRow +="&$%.2f\\%%$ " %(100*RelGain)
             
             if Measure in self.hMainMeasure:
                 if MethodName == self.BaseName:
                     TableRow += "&NA"
                 else:
-                    Win,Loss,Tie = AdhocResAnalysisC().WinLossTie(self.hBaseMeasure, hMeasure, Measure)
+                    Win,Loss,Tie = AdhocResAnalysisC().WinLossTie(hBaseMeasure, hMeasure, Measure)
                     TableRow +="&%d/%d/%d " %(Win,Loss,Tie)
         
         TableRow += '\\\\\n'              
         return TableRow
+    
+    
+    
     
     def FormTableTail(self):
         TableTail = "\\hline\end{tabular}\end{table*}"
@@ -430,8 +471,8 @@ class AdhocResAnalysisC(cxBaseC):
         BarMaker = BarPloterC()
         BarMaker.lY = lY
         BarMaker.X = ['$%s$' %(item.replace('%','\%')) for item in X]
-        BarMaker.XLabel = 'Relative ERR Gain Over ListMLE'
-        BarMaker.YLabel = 'Number of Query'
+        BarMaker.XLabel = 'Relative ERR@20 Gain/Loss Compared with ListMLE'
+        BarMaker.YLabel = 'Number of Queries'
 #         BarMaker.lLegend = [r'\textbf{%s}' %(name) for name in self.lMethodName[1:]]
         BarMaker.lLegend = self.lMethodName[1:]
         BarMaker.title =  self.Caption

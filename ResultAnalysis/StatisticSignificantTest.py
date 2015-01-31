@@ -16,7 +16,7 @@ from cxBase.Conf import cxConfC
 from cxBase.base import cxBaseC
 from AdhocEva.AdhocMeasure import *
 import math,random
-
+from copy import deepcopy
 class StatisticSignificantTestC(cxBaseC):
     
     def Init(self):
@@ -32,6 +32,9 @@ class StatisticSignificantTestC(cxBaseC):
         self.lName = conf.GetConf('methodname',[])
         self.lBaseName = conf.GetConf('baseline',[])
         self.lResInName = conf.GetConf('methodevares',[])
+    
+    
+    
         
     @staticmethod
     def ShowConf():
