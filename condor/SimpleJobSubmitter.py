@@ -17,10 +17,13 @@ import time
 def SimpleJobSubmitter(llCmd,MaxJob = 100):
     
     for lCmd in llCmd:
+        cnt = 0
         while GetMyJobNum() >= MaxJob:
-            time.sleep(1)
-            print subprocess.check_output(lCmd)
-            print '\t'.join(lCmd)          
+            time.sleep(10)
+            cnt += 10
+            print 'waiting for %d sec' %(cnt)
+        print subprocess.check_output(lCmd)
+        print '\t'.join(lCmd)          
     
     return True
 
