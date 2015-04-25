@@ -9,8 +9,6 @@ import json
 
 
 import site
-site.addsitedir('/bos/usr0/cx/PyCode/Geektools')
-site.addsitedir('/bos/usr0/cx/PyCode/QueryExpansion')
 site.addsitedir('/bos/usr0/cx/PyCode/cxPylib')
 
 from cxBase.base import *

@@ -11,7 +11,7 @@ site.addsitedir('/bos/usr0/cx/PyCode/cxPyLib')
 from cxBase.base import *
 import json
 from cxBase.WalkDirectory import *
-from CrossValidation.FoldNameGenerator import *
+from CrossValidation_old.FoldNameGenerator import *
 import ntpath
 
 

@@ -9,7 +9,7 @@ import site
 site.addsitedir('/bos/usr0/cx/PyCode/cxPyLib')
 site.addsitedir('/bos/usr0/cx/PyCode/Geektools')
 
-from CrossValidation.FoldNameGenerator import *
+from CrossValidation_old.FoldNameGenerator import *
 from cxBase.KeyFileReader import KeyFileReaderC
 import sys
 from cxBase.base import cxConf
