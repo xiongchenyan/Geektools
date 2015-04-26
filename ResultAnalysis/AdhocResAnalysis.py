@@ -424,7 +424,7 @@ class AdhocResAnalysisC(cxBaseC):
             else:
                 RelGain = AdhocResAnalysisC().RelativeGain(hBaseMeasure,hMeasure,Measure,0)
                 print 'RelGain [%f-%f=%f][%.2f]' %(hMeasure['mean'].GetMeasure(Measure), hBaseMeasure['mean'].GetMeasure(Measure),hMeasure['mean'].GetMeasure(Measure) - hBaseMeasure['mean'].GetMeasure(Measure),RelGain)
-                TableRow +="&$%.2f\\%%$ " %(100*RelGain)
+                TableRow +="&$\\hspace*{-0.15in}(%.2f\\%%)$ " %(100*RelGain)
             
             if Measure in self.hMainMeasure:
                 if MethodName == self.BaseName:
