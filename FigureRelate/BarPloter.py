@@ -32,7 +32,7 @@ class BarPloterC(cxBaseC):
         self.title = ""
         
         
-    def Bar(self,OutName,Format='eps'):
+    def Bar(self,OutName,Format='pdf'):
         rc('text',usetex=True)
         n_group = len(self.lY)
         index = np.arange(len(self.X)) * n_group
@@ -40,7 +40,7 @@ class BarPloterC(cxBaseC):
         
         opacity = 0.4
         error_config = {'ecolor': '0.3'}
-        fig, ax = plt.subplots(figsize=(7.5,4))
+        fig, ax = plt.subplots(figsize=(8.5,4))
         
         ax.tick_params(axis='both',which='major',labelsize=10)
         MaxY = 0

@@ -471,7 +471,7 @@ class AdhocResAnalysisC(cxBaseC):
         BarMaker = BarPloterC()
         BarMaker.lY = lY
         BarMaker.X = ['$%s$' %(item.replace('%','\%')) for item in X]
-        BarMaker.XLabel = 'Relative ERR@20 Gain/Loss Compared with ListMLE'
+        BarMaker.XLabel = 'Relative ERR@20 Gain/Loss Compared with IndriLm'
         BarMaker.YLabel = 'Number of Queries'
 #         BarMaker.lLegend = [r'\textbf{%s}' %(name) for name in self.lMethodName[1:]]
         BarMaker.lLegend = self.lMethodName[1:]
